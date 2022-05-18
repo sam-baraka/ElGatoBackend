@@ -8,7 +8,7 @@ namespace ElGatoBackend.Models
     {
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
-        public int Id { get; set; }
+        public string Id { get; set; } = null!;
 
         [BsonElement("Name")]
         public string BreedName { get; set; } = null!;
