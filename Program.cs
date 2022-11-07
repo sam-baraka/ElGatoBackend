@@ -8,6 +8,10 @@ builder.Services.Configure<CatDatabaseSettings>(
     builder.Configuration.GetSection("CatsDatabase"));
 
 builder.Services.AddSingleton<BreedsService>();
+// Json serializer settings
+builder.Services.AddControllers()
+    .AddJsonOptions(
+        options => options.JsonSerializerOptions.PropertyNamingPolicy = null);
 
 var app = builder.Build();
 
