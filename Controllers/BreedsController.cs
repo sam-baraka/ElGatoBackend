@@ -1,83 +1,75 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using ElGatoBackend.Services;
+using ElGatoBackend.Models;
 
-namespace ElGatoBackend.Controllers
+namespace ElGatoBackend.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class BreedsController : ControllerBase
 {
-    public class BreedsController : Controller
+    private readonly BreedsService _breedService;
+
+    public BreedsController(BreedsService breedsService) =>
+        _breedService = breedsService;
+
+    [HttpGet]
+    public async Task<List<Breed>> Get() =>
+        await _breedService.GetAsync();
+
+    [HttpGet("{id:length(24)}")]
+    public async Task<ActionResult<Breed>> Get(string id)
     {
-        // GET: BreedsController
-        public ActionResult Index()
+        var breed = await _breedService.GetAsync(id);
+
+        if (breed is null)
         {
-            return View();
+            return NotFound();
         }
 
-        // GET: BreedsController/Details/5
-        public ActionResult Details(int id)
+        return breed;
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> Post(Breed newBreed)
+    {
+        await _breedService.CreateAsync(newBreed);
+
+        return CreatedAtAction(nameof(Get), new { id = newBreed.Id }, newBreed);
+    }
+
+    [HttpPut("{id:length(24)}")]
+    public async Task<IActionResult> Update(string id, Breed updatedBreed)
+    {
+        var breed = await _breedService.GetAsync(id);
+
+        if (breed is null)
         {
-            return View();
+            return NotFound();
         }
 
-        // GET: BreedsController/Create
-        public ActionResult Create()
+        updatedBreed.Id = breed.Id;
+
+        await _breedService.UpdateAsync(id, updatedBreed);
+
+        return NoContent();
+    }
+
+    [HttpDelete("{id:length(24)}")]
+    public async Task<IActionResult> Delete(string id)
+    {
+        var breed = await _breedService.GetAsync(id);
+
+        if (breed is null)
         {
-            return View();
+            return NotFound();
         }
 
-        // POST: BreedsController/Create
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        await _breedService.RemoveAsync(id);
 
-        // GET: BreedsController/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: BreedsController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: BreedsController/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: BreedsController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        return NoContent();
     }
 }
+
+
+
