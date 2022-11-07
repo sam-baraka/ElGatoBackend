@@ -1,9 +1,13 @@
+using ElGatoBackend.Services;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
 builder.Services.Configure<CatDatabaseSettings>(
     builder.Configuration.GetSection("CatsDatabase"));
+
+builder.Services.AddSingleton<BreedsService>();
 
 var app = builder.Build();
 
